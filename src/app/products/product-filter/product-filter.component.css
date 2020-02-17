@@ -1,0 +1,8 @@
+.sticky-top {
+  position: -webkit-sticky;
+  position: -moz-sticky;
+  position: -o-sticky;
+  position: -ms-sticky;
+  position: sticky;
+  top: 80px;
+}
