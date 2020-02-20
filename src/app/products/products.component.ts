@@ -22,9 +22,7 @@ export class ProductsComponent implements OnInit{
     private route: ActivatedRoute,
     private productService: ProductService,
     private shoppingCartService: ShoppingCartService,
-    ) {
-    
-  }
+  ) { }
 
   async ngOnInit() {
     this.cart$ = await this.shoppingCartService.getCart();
