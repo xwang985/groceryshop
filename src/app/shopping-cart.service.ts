@@ -1,11 +1,9 @@
 import { Injectable } from '@angular/core';
-import { AngularFireDatabase, SnapshotAction } from '@angular/fire/database';
+import { AngularFireDatabase } from '@angular/fire/database';
 import { Product } from './models/product';
 import { take, map } from 'rxjs/operators';
-import { FirebaseObjectObservable } from '@angular/fire/database-deprecated';
 import { ShoppingCart } from './models/shopping-cart';
 import { Observable } from 'rxjs';
-import { SnapshotOptions } from '@angular/fire/firestore';
 import { ShoppingCartItem } from './models/shopping-cart-item';
 
 @Injectable({
@@ -15,20 +13,33 @@ export class ShoppingCartService {
 
   constructor(private db: AngularFireDatabase) { }
 
-  private create() {
-  	return this.db.list('/shopping-carts').push({
-  		dateCreated: new Date().getTime()
-  	});
-  }
-  
   async getCart(): Promise<Observable<ShoppingCart>> {
-  	let cartId = await this.getOrCreateCartId();
-  	return this.db.object('/shopping-carts/' + cartId).snapshotChanges()
+    let cartId = await this.getOrCreateCartId();
+    return this.db.object('/shopping-carts/' + cartId).snapshotChanges()
       .pipe(map(x => new ShoppingCart(x.payload.exportVal().items)));
   }
 
+  async addToCart(product: Product) {
+    this.updateItem(product, 1);
+  }
+
+  async removeFromCart(product: Product) {
+    this.updateItem(product, -1);
+  }
+
+  async clearCart() {
+    let cartId = await this.getOrCreateCartId();
+    this.db.object('/shopping-carts/' + cartId + '/items').remove();
+  }
+
+  private create() {
+    return this.db.list('/shopping-carts').push({
+      dateCreated: new Date().getTime()
+    });
+  } 
+  
   private getItem(cartId: string, productId: string) {
-  	return this.db.object("/shopping-carts/" + cartId + "/items/" + productId);
+  	return this.db.object('/shopping-carts/' + cartId + '/items/' + productId);
   }
 
   private async getOrCreateCartId(): Promise<string> {
@@ -40,15 +51,7 @@ export class ShoppingCartService {
 		return result.key; 	
   }
 
-  async addToCart(product: Product) {
-    this.updateItemQuantity(product, 1);
-  }
-
-  async removeFromCart(product: Product) {
-    this.updateItemQuantity(product, -1);
-  }
-
-  private async updateItemQuantity(product: Product, change: number) {
+  private async updateItem(product: Product, change: number) {
     let cartId = await this.getOrCreateCartId();
     let item = this.getItem(cartId, product.key);
 
@@ -57,12 +60,19 @@ export class ShoppingCartService {
       const quantity = (data? (data.quantity || 0) : 0) + change ;
       if (quantity === 0)
         item.remove(); 
-      else {
-        item.update({
-          product: product, 
-          quantity: quantity
-        });
-      }
+      else
+          item.update({
+            title: product.title,
+            imageUrl: product.imageUrl,
+            price: product.price,
+            quantity
+          });
+      // else {
+      //   item.update({
+      //     product: product, 
+      //     quantity: quantity
+      //   });
+      // }
     });
   }
 }

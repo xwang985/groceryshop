@@ -3,19 +3,20 @@ import { ShoppingCartItem } from './shopping-cart-item';
 
 export class ShoppingCart {
     items: ShoppingCartItem[] = []; // Since we're using the push method, initializing to an empty array to avoid null exception error
-    constructor(public itemsMap: { [productId: string]: ShoppingCartItem}) {
-        itemsMap = itemsMap || {};
+    constructor(private itemsMap: { [productId: string]: ShoppingCartItem}) {
+        this.itemsMap = itemsMap || {};
 
         // tslint:disable-next-line: forin
         for (const productId in itemsMap) {
             const item = itemsMap[productId];
-            this.items.push(new ShoppingCartItem(item.product, item.quantity)); // Objects that we get from firebase, so we map to shopping-cart-item object
+            // this.items.push(new ShoppingCartItem(item.product, item.quantity));
+            this.items.push(new ShoppingCartItem({ ...item, key: productId })); // Objects that we get from firebase, so we map to shopping-cart-item object
         }
     }
 
     getQuantity(product: Product) {
-        if (!this.itemsMap) 
-            return 0;
+        // if (!this.itemsMap) 
+        //     return 0;
 
         const item = this.itemsMap[product.key];
         return item ? item.quantity : 0;
