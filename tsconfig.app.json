@@ -14,5 +14,11 @@
   "exclude": [
     "src/test.ts",
     "src/**/*.spec.ts"
-  ]
+  ],
+  "baseUrl": "./src",
+  "paths": {
+    "shared/*": [
+      "app/shared/*"
+    ]
+  }
 }
