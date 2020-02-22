@@ -15,6 +15,7 @@ import { CustomFormsModule } from 'ng2-validation';
 import { AngularFireDatabaseModule } from '@angular/fire/database';
 import { AngularFireAuthModule } from '@angular/fire/auth';
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
+import { DataTableModule } from 'angular7-data-table';
 
 @NgModule({
   declarations: [
@@ -27,7 +28,8 @@ import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
     CustomFormsModule,
     AngularFireDatabaseModule,
     AngularFireAuthModule,
-    NgbModule
+    NgbModule,
+    DataTableModule
   ],
   exports: [
     CommonModule,
@@ -38,6 +40,7 @@ import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
     AngularFireDatabaseModule,
     AngularFireAuthModule,
     NgbModule,
+    DataTableModule
   ],
   providers: [
     AuthService,
